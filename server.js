@@ -3,7 +3,7 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const cors = require("cors")
-
+const port = process.env.PORT || 3001;
 app.use(
   cors({
     origin: "*",
@@ -23,4 +23,4 @@ app.use(express.json());
 const userRouter = require("./routes/userRoutes");
 app.use("/user", userRouter);
 
-app.listen(process.env.PORT || 3001, () => console.log("Server Started"));
+app.listen(port, () => console.log(`listening on port ${port}`))
