@@ -1,0 +1,28 @@
+GET http://localhost:3001/user
+
+###
+
+GET http://localhost:3001/user/610f04cd7343800a395c79c6
+
+###
+
+POST http://localhost:3001/user
+Content-Type: application/json
+
+{
+    "name": "Roberto Lark",
+    "avatar": "https://i.ebayimg.com/images/g/QBIAAOSw3BBeemIN/s-l500.jpg"
+}
+
+###
+
+PATCH http://localhost:3001/user/610f0899fbc8aa0d170023eb
+Content-Type: application/json
+
+{
+    "name": "Robbo Lark"
+}
+
+###
+
+DELETE http://localhost:3001/user/610f04cd7343800a395c79c6
