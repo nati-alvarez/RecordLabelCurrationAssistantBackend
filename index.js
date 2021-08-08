@@ -1,9 +1,10 @@
 require("dotenv").config();
+const Discogs = require('disconnect').Client;
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const cors = require("cors")
-const server = express();
+
 const port = process.env.PORT || 3001;
 app.use(
   cors({
@@ -27,7 +28,7 @@ const userRouter = require("./routes/userRoutes");
 app.use("/user", userRouter);
 
 
-server.get("/", (req, res) => {
+app.get("/", (req, res) => {
 	res.json({
 		message: "Welcome to the API",
 	});
