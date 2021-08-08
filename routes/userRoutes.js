@@ -28,8 +28,9 @@ router.get("/", async (req, res) => {
 // Getting One
 router.get("/:id", getUser, async (req, res) => {
     const user = await getOrSetCache(`users:${req.params.id}`, async () => {
-        res.json(res.user);
+      return res.json(res.user);
     })
+    res.json(user)
 });
 
 // Creating one
