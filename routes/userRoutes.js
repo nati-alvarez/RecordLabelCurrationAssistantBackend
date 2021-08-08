@@ -15,7 +15,11 @@ router.get("/", async (req, res) => {
 });
 
 // Getting One
-router.get("/:id", getUser, (req, res) => {
+router.get("/:id", getUserById, (req, res) => {
+  res.json(res.user);
+});
+
+router.get("/:email", getUserByEmail, (req, res) => {
   res.json(res.user);
 });
 
@@ -35,7 +39,7 @@ router.post("/", async (req, res) => {
 });
 
 // Updating One
-router.patch("/:id", getUser, async (req, res) => {
+router.patch("/:id", getUserById, async (req, res) => {
   if (req.body.name != null) {
     res.user.name = req.body.name;
   }
@@ -57,7 +61,7 @@ router.patch("/:id", getUser, async (req, res) => {
 });
 
 // Deleting One
-router.delete("/:id", getUser, async (req, res) => {
+router.delete("/:id", getUserById, async (req, res) => {
   try {
     await res.user.remove();
     res.json({message: "deleted user"});
@@ -66,7 +70,7 @@ router.delete("/:id", getUser, async (req, res) => {
   }
 });
 
-async function getUser(req, res, next) {
+async function getUserById(req, res, next) {
   let user;
   try {
     user = await User.findById(req.params.id);
@@ -80,5 +84,23 @@ async function getUser(req, res, next) {
   res.user = user;
   next();
 }
+
+async function getUserByEmail(req, res, next) {
+  let user;
+  try {
+    user = await User.findOne((req.params.email))
+    if (user == null) {
+      return res.status(404).json({message: "Cannot find User"});
+    }
+  } catch {
+    return res.status(500).json({message: err.message});
+  }
+
+  res.user = user;
+  next();
+}
+
+
+
 
 module.exports = router;
