@@ -8,6 +8,9 @@ const userSchema = new mongoose.Schema({
   avatar: {
     type: String,
   },
+  topTen: {
+    type: Array,
+  }
 });
 //test
 module.exports = mongoose.model("User", userSchema);

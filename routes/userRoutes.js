@@ -41,6 +41,9 @@ router.patch("/:id", getUser, async (req, res) => {
   if (req.body.avatar != null) {
     res.user.avatar = req.body.avatar;
   }
+  if (req.body.topTen != null) {
+    res.user.topTen.push = req.body.topTen;
+  }
   try {
     const updatedUser = await res.user.save();
     res.json(updatedUser);
