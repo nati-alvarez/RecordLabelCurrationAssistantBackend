@@ -3,15 +3,31 @@ const express = require("express");
 const router = express.Router();
 
 const User = require("../models/user");
+const Redis = require("redis");
+
+const client = Redis.createClient();
+
+client.on("error", (err) => {
+  console.log("Error " + err);
+});
 
 // Getting all
 router.get("/", async (req, res) => {
-  try {
-    const users = await User.find();
-    res.json(users);
-  } catch {
-    res.status(500).json({message: err.message});
-  }
+  Redis.RedisClient.get("users", async (error, users) => {
+    if (error) console.log(error);
+    if (users != null) {
+      return res.json(JSON.parse(users));
+    } else {
+      try {
+        const users = await User.find();
+        res.json(users);
+        Redis.RedisClient.set("users", JSON.stringify(data));
+      } catch {
+        res.status(500).json({message: err.message});
+      }
+      res.json(data);
+    }
+  });
 });
 
 // Getting One
@@ -42,7 +58,7 @@ router.patch("/:id", getUser, async (req, res) => {
     res.user.avatar = req.body.avatar;
   }
   if (req.body.topTen != null) {
-    res.user.topTen.push(req.body.topTen)
+    res.user.topTen.push(req.body.topTen);
   }
   try {
     const updatedUser = await res.user.save();
