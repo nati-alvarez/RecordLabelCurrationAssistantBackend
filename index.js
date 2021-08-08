@@ -1,5 +1,5 @@
 require("dotenv").config();
-// const Discogs = require('disconnect').Client;
+const Discogs = require('disconnect').Client;
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -49,7 +49,10 @@ app.get('/authorize', (req, res) => {
             
 			// Persist "requestData" here so that the callback handler can 
 			// access it later after returning from the authorize url
-
+      if (typeof localStorage === "undefined" || localStorage === null) {
+        var LocalStorage = require('node-localstorage').LocalStorage;
+        localStorage = new LocalStorage('./scratch');
+      }
             const serializedRequestData = JSON.stringify(requestData)
             localStorage.setItem("request", serializedRequestData)
 
@@ -68,6 +71,12 @@ app.get('/callback', (req, res) => {
 	oAuth.getAccessToken(
 		req.query.oauth_verifier, // Verification code sent back by Discogs
 		function(err, accessData){
+
+      if (typeof localStorage === "undefined" || localStorage === null) {
+        var LocalStorage = require('node-localstorage').LocalStorage;
+        localStorage = new LocalStorage('./scratch');
+      }
+
 			// Persist "accessData" here for following OAuth calls 
             const serializedAccessData = JSON.stringify(accessData)
             localStorage.setItem("access", serializedAccessData)
