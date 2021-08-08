@@ -23,6 +23,7 @@ router.get("/:id", getUser, (req, res) => {
 router.post("/", async (req, res) => {
   const user = new User({
     name: req.body.name,
+    email: req.body.email,
     avatar: req.body.avatar,
   });
   try {
@@ -37,6 +38,9 @@ router.post("/", async (req, res) => {
 router.patch("/:id", getUser, async (req, res) => {
   if (req.body.name != null) {
     res.user.name = req.body.name;
+  }
+  if (req.body.email != null) {
+    res.user.email = req.body.email;
   }
   if (req.body.avatar != null) {
     res.user.avatar = req.body.avatar;
