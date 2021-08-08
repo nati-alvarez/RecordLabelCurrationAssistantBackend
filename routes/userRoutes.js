@@ -88,7 +88,7 @@ async function getUserById(req, res, next) {
 async function getUserByEmail(req, res, next) {
   let user;
   try {
-    user = await User.findOne((req.params.email))
+    user = await User.findOne({email:req.params.email})
     if (user == null) {
       return res.status(404).json({message: "Cannot find User"});
     }
