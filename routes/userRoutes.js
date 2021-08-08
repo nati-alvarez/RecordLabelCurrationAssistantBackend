@@ -19,7 +19,7 @@ router.get("/:id", getUserById, (req, res) => {
   res.json(res.user);
 });
 
-router.get("/:email", getUserByEmail, (req, res) => {
+router.get("/:name", getUserByName, (req, res) => {
   res.json(res.user);
 });
 
@@ -85,10 +85,10 @@ async function getUserById(req, res, next) {
   next();
 }
 
-async function getUserByEmail(req, res, next) {
+async function getUserByName(req, res, next) {
   let user;
   try {
-    user = await User.findOne((req.params.email))
+    user = await User.findOne((req.params.name))
     if (user == null) {
       return res.status(404).json({message: "Cannot find User"});
     }
