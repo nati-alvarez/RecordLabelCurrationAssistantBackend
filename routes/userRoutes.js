@@ -50,7 +50,10 @@ router.patch("/:id", getUserById, async (req, res) => {
     res.user.avatar = req.body.avatar;
   }
   if (req.body.topTen != null) {
-    res.user.topTen.push(req.body.topTen)
+    if (res.user.topTen.length >= 10) {
+      res.user.topTen.pop();
+    }
+    res.user.topTen.push(req.body.topTen);
   }
   try {
     const updatedUser = await res.user.save();
@@ -88,7 +91,7 @@ async function getUserById(req, res, next) {
 async function getUserByName(req, res, next) {
   let user;
   try {
-    user = await User.findOne((req.params.name))
+    user = await User.findOne(req.params.name);
     if (user == null) {
       return res.status(404).json({message: "Cannot find User"});
     }
@@ -114,6 +117,5 @@ async function getUserByName(req, res, next) {
 //   res.user = user;
 //   next();
 // }
-
 
 module.exports = router;
