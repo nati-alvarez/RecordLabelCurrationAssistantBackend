@@ -41,7 +41,7 @@ app.get("/authorize", (req, res) => {
   oAuth.getRequestToken(
     process.env.DISCOGS_API_KEY,
     process.env.DISCOGS_API_SECRET,
-    "http://localhost:3001/callback",
+    "https://rlca-backend.herokuapp.com/callback",
     function (err, requestData) {
       discogsAccessData.push(requestData) 
       res.redirect(requestData.authorizeUrl);
