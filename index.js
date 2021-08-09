@@ -57,9 +57,7 @@ app.get("/callback", (req, res) => {
     req.query.oauth_verifier,
     function (err, accessData) {
       discogsAccessData.push(accessData)
-      res.redirect("http://localhost:3000/dashboard");
-      
-
+      res.redirect("http://localhost:3000/dashboard")
     }
   );
 });
