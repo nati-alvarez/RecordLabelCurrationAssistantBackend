@@ -73,9 +73,11 @@ app.get("/callback", (req, res) => {
       // const serializedAccessData = JSON.stringify(accessData);
       // localStorage.setItem("access", serializedAccessData);
       discogsAccessData = accessData
-      res.send("Received access token!");
+      res.redirect('http://localhost:3000/dashboard');
+      // res.send("Received access token!");
     }
   );
+
 });
 
 // make the OAuth call
@@ -88,12 +90,14 @@ app.get("/identity", (req, res) => {
   // let deserializedAccessData = JSON.parse(localStorage.getItem("access"));
 
   var dis = new Discogs('Sonic Arch', discogsAccessData);
+  res.json(dis);
   console.log(dis)
   res.send(dis)
   dis.getIdentity(function (err, data) {
     console.log(data)
     res.send(data);
   });
+  res.redirect('http://localhost:3000/dashboard');
 });
 
 app.listen(port, () => console.log(`listening on port ${port}`));
