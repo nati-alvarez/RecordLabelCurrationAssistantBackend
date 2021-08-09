@@ -41,8 +41,7 @@ app.get("/authorize", (req, res) => {
   oAuth.getRequestToken(
     process.env.DISCOGS_API_KEY,
     process.env.DISCOGS_API_SECRET,
-    "http://localhost:3001/callback",
-    // "https://rlca-backend.herokuapp.com/callback",
+    "https://rlca-backend.herokuapp.com/callback",
     function (err, requestData) {
       // Persist "requestData" here so that the callback handler can
       // access it later after returning from the authorize url
