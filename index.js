@@ -34,7 +34,7 @@ app.get("/", (req, res) => {
 
 //get Request Token
 
-const discogsAccessData = []
+const discogsAccessData = [];
 
 app.get("/authorize", (req, res) => {
   var oAuth = new Discogs().oauth();
@@ -43,7 +43,7 @@ app.get("/authorize", (req, res) => {
     process.env.DISCOGS_API_SECRET,
     "https://rlca-backend.herokuapp.com/callback",
     function (err, requestData) {
-      discogsAccessData.push(requestData) 
+      discogsAccessData.push(requestData);
       res.redirect(requestData.authorizeUrl);
     }
   );
@@ -53,30 +53,21 @@ app.get("/authorize", (req, res) => {
 
 app.get("/callback", (req, res) => {
   var oAuth = new Discogs(discogsAccessData[0]).oauth();
-  oAuth.getAccessToken(
-    req.query.oauth_verifier,
-    function (err, accessData) {
-      discogsAccessData.push(accessData)
-      res.redirect("http://localhost:3000/dashboard")
-    }
-  );
+  oAuth.getAccessToken(req.query.oauth_verifier, function (err, accessData) {
+    discogsAccessData.push(accessData);
+  });
 });
 
 // make the OAuth call
 
-app.get('/identity', function(req, res){
-  console.log(discogsAccessData)
+app.get("/identity", function (req, res) {
+  console.log(discogsAccessData);
   var dis = new Discogs(discogsAccessData[1]);
-	dis.getIdentity(function(err, data){
-		res.send(data);
-	});
+  dis.getIdentity(function (err, data) {
+    res.send(data);
+  });
 });
 
-
 // discogs test call
-
-
-
-
 
 app.listen(port, () => console.log(`listening on port ${port}`));
