@@ -2,7 +2,7 @@ GET http://localhost:3001/user
 
 ###
 
-GET http://localhost:3001/user/611021eda160e09e0aed2f1a
+GET http://localhost:3001/user/610f04cd7343800a395c79c6
 
 ###
 
@@ -11,7 +11,8 @@ Content-Type: application/json
 
 {
     "name": "Roberto Lark",
-    "avatar": "https://i.ebayimg.com/images/g/QBIAAOSw3BBeemIN/s-l500.jpg"
+    "avatar": "https://i.ebayimg.com/images/g/QBIAAOSw3BBeemIN/s-l500.jpg",
+    "email": "t@t.com"
 }
 
 ###
