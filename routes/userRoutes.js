@@ -6,6 +6,7 @@ const User = require("../models/user");
 
 // Getting all
 router.get("/", async (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
   try {
     const users = await User.find();
     res.json(users);
@@ -16,15 +17,18 @@ router.get("/", async (req, res) => {
 
 // Getting One
 router.get("/:id", getUserById, (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
   res.json(res.user);
 });
 
 router.get("/:name", getUserByName, (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
   res.json(res.user);
 });
 
 // Creating one
 router.post("/", async (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
   const user = new User({
     idNum: res.params.idNum,
     name: res.params.name
@@ -39,6 +43,7 @@ router.post("/", async (req, res) => {
 
 // Updating One
 router.patch("/:id", getUserById, async (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
   if (req.body.name != null) {
     res.user.name = req.body.name;
   }
@@ -64,6 +69,7 @@ router.patch("/:id", getUserById, async (req, res) => {
 
 // Deleting One
 router.delete("/:id", getUserById, async (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
   try {
     await res.user.remove();
     res.json({message: "deleted user"});
@@ -73,6 +79,7 @@ router.delete("/:id", getUserById, async (req, res) => {
 });
 
 async function getUserById(req, res, next) {
+
   let user;
   try {
     user = await User.findById(req.params.id);
