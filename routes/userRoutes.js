@@ -28,10 +28,11 @@ router.get("/:name", getUserByName, (req, res) => {
 
 // Creating one
 router.post("/", async (req, res) => {
+  // console.log(req.body.idNum, res.params)
   res.set('Access-Control-Allow-Origin', '*');
   const user = new User({
-    idNum: res.params.idNum,
-    name: res.params.name
+    idNum: req.body.idNum,
+    name: req.body.name
   });
   try {
     const newUser = await user.save();
