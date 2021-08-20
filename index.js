@@ -45,7 +45,6 @@ app.get("/authorize", (req, res) => {
     function (err, requestData) {
       discogsAccessData.push(requestData);
       res.redirect(requestData.authorizeUrl);
-
     }
   );
 });
@@ -56,7 +55,7 @@ app.get("/callback", (req, res) => {
   var oAuth = new Discogs(discogsAccessData[0]).oauth();
   oAuth.getAccessToken(req.query.oauth_verifier, function (err, accessData) {
     discogsAccessData.push(accessData);
-    res.redirect('https://sonic-architecture-v1.netlify.app/dashboard');
+    res.redirect("https://sonic-architecture-v1.netlify.app/dashboard");
   });
 });
 
