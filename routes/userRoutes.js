@@ -28,6 +28,7 @@ router.get("/:name", getUserByName, (req, res) => {
 
 // Creating one
 router.post("/", async (req, res) => {
+  res.set("Access-Control-Allow-Origin", "*");
   let user;
   user = await User.findOne({idNum: req.body.idNum});
   if (user.idNum === req.body.idNum) {
