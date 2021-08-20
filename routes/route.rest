@@ -10,8 +10,8 @@ POST http://localhost:3001/user
 Content-Type: application/json
 
 {
-    "name": "Roberto Lark",
-    "idNum": 12324,
+    "idNum":1565780,
+    "name":"quietcalm",
     "avatar": "https://i.ebayimg.com/images/g/QBIAAOSw3BBeemIN/s-l500.jpg",
     "email": "t@t.com"
 }

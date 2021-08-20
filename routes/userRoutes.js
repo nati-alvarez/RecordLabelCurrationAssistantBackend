@@ -6,7 +6,7 @@ const User = require("../models/user");
 
 // Getting all
 router.get("/", async (req, res) => {
-  res.set('Access-Control-Allow-Origin', '*');
+  res.set("Access-Control-Allow-Origin", "*");
   try {
     const users = await User.find();
     res.json(users);
@@ -17,34 +17,38 @@ router.get("/", async (req, res) => {
 
 // Getting One
 router.get("/:id", getUserById, (req, res) => {
-  res.set('Access-Control-Allow-Origin', '*');
+  res.set("Access-Control-Allow-Origin", "*");
   res.json(res.user);
 });
 
 router.get("/:name", getUserByName, (req, res) => {
-  res.set('Access-Control-Allow-Origin', '*');
+  res.set("Access-Control-Allow-Origin", "*");
   res.json(res.user);
 });
 
 // Creating one
 router.post("/", async (req, res) => {
-  // console.log(req.body.idNum, res.params)
-  res.set('Access-Control-Allow-Origin', '*');
-  const user = new User({
-    idNum: req.body.idNum,
-    name: req.body.name
-  });
-  try {
-    const newUser = await user.save();
-    res.status(201).json(newUser);
-  } catch (err) {
-    res.status(400).json({message: err.message});
+  let user;
+  user = await User.findOne({idNum: req.body.idNum});
+  if (user.idNum === req.body.idNum) {
+    res.send({message: "user already exists in db"});
+  } else {
+    const user = new User({
+      idNum: req.body.idNum,
+      name: req.body.name,
+    });
+    try {
+      const newUser = await user.save();
+      res.status(201).json(newUser);
+    } catch (err) {
+      res.status(400).json({message: err.message});
+    }
   }
 });
 
 // Updating One
 router.patch("/:id", getUserById, async (req, res) => {
-  res.set('Access-Control-Allow-Origin', '*');
+  res.set("Access-Control-Allow-Origin", "*");
   if (req.body.name != null) {
     res.user.name = req.body.name;
   }
@@ -70,7 +74,7 @@ router.patch("/:id", getUserById, async (req, res) => {
 
 // Deleting One
 router.delete("/:id", getUserById, async (req, res) => {
-  res.set('Access-Control-Allow-Origin', '*');
+  res.set("Access-Control-Allow-Origin", "*");
   try {
     await res.user.remove();
     res.json({message: "deleted user"});
@@ -80,14 +84,14 @@ router.delete("/:id", getUserById, async (req, res) => {
 });
 
 async function getUserById(req, res, next) {
-
   let user;
+  console.log(req.body.idNum);
   try {
     user = await User.findById(req.params.id);
     if (user == null) {
       return res.status(404).json({message: "Cannot find User"});
     }
-  } catch {
+  } catch (err) {
     return res.status(500).json({message: err.message});
   }
 
@@ -96,6 +100,7 @@ async function getUserById(req, res, next) {
 }
 
 async function getUserByName(req, res, next) {
+  console.log(req.body);
   let user;
   try {
     user = await User.findOne(req.params.name);
