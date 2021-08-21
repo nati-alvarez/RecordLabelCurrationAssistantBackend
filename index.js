@@ -41,7 +41,8 @@ app.get("/authorize", (req, res) => {
   oAuth.getRequestToken(
     process.env.DISCOGS_API_KEY,
     process.env.DISCOGS_API_SECRET,
-    "https://rlca-backend.herokuapp.com/callback",
+    // "https://rlca-backend.herokuapp.com/callback",
+    "http://localhost:3001/callback",
     function (err, requestData) {
       console.log(err, requestData);
       discogsAccessData.push(requestData);
@@ -57,7 +58,8 @@ app.get("/callback", (req, res) => {
   oAuth.getAccessToken(req.query.oauth_verifier, function (err, accessData) {
     console.log(err, accessData);
     discogsAccessData.push(accessData);
-    res.redirect("https://sonic-architecture-v1.netlify.app/dashboard");
+    // res.redirect("https://sonic-architecture-v1.netlify.app/dashboard");
+    res.redirect("http://localhost:3000/dashboard");
   });
 });
 

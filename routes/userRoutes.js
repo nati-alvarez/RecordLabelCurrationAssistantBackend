@@ -31,7 +31,7 @@ router.post("/", async (req, res) => {
   res.set("Access-Control-Allow-Origin", "*");
   let user;
   user = await User.findOne({idNum: req.body.idNum});
-  if (user.idNum === req.body.idNum) {
+  if (user?.idNum === req.body.idNum) {
     res.send({message: "user already exists in db"});
   } else {
     const user = new User({
@@ -50,6 +50,7 @@ router.post("/", async (req, res) => {
 // Updating One
 router.patch("/:id", getUserById, async (req, res) => {
   res.set("Access-Control-Allow-Origin", "*");
+  console.log(req.body);
   if (req.body.name != null) {
     res.user.name = req.body.name;
   }
@@ -86,22 +87,21 @@ router.delete("/:id", getUserById, async (req, res) => {
 
 async function getUserById(req, res, next) {
   let user;
-  console.log(req.body.idNum);
   try {
-    user = await User.findById(req.params.id);
+    //  Adventure.findOne({ country: 'Croatia' }).exec();
+    user = await User.findOne({idNum: req.params.id}).exec();
+    console.log(user);
     if (user == null) {
       return res.status(404).json({message: "Cannot find User"});
     }
-  } catch (err) {
-    return res.status(500).json({message: err.message});
+  } catch {
+    return res.status(500).json;
   }
-
   res.user = user;
   next();
 }
 
 async function getUserByName(req, res, next) {
-  console.log(req.body);
   let user;
   try {
     user = await User.findOne(req.params.name);

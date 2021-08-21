@@ -13,24 +13,24 @@ RedisClient.on("error", (err) => {
 
 // Getting all
 router.get("/", async (req, res) => {
-    const users = await getOrSetCache("users", async () => {
-        try {
-            const users = await User.find();
-            res.json(users);
-            RedisClient.set("users", JSON.stringify(users));
-          } catch {
-            res.status(500).json({message: err.message});
-          }
-    })
-    return users
+  const users = await getOrSetCache("users", async () => {
+    try {
+      const users = await User.find();
+      res.json(users);
+      RedisClient.set("users", JSON.stringify(users));
+    } catch {
+      res.status(500).json({message: err.message});
+    }
+  });
+  return users;
 });
 
 // Getting One
 router.get("/:id", getUser, async (req, res) => {
-    const user = await getOrSetCache(`users:${req.params.id}`, async () => {
-      res.json(res.user);
-    })
-    res.json(user)
+  const user = await getOrSetCache(`users:${req.params.id}`, async () => {
+    res.json(res.user);
+  });
+  res.json(user);
 });
 
 // Creating one
@@ -91,18 +91,16 @@ async function getUser(req, res, next) {
   next();
 }
 
-
 function getOrSetCache(key, cb) {
-    return new Promise((resolve, reject) => {
-        RedisClient.get(key, async (error, data) => {
-            if (error) return reject(error)
-        if (data != null) return resolve(JSON.parse(data))
-        const freshData = await cb()
-        RedisClient.set(key, JSON.stringify(freshData))
-        resolve(freshData)
-        })
-    })
+  return new Promise((resolve, reject) => {
+    RedisClient.get(key, async (error, data) => {
+      if (error) return reject(error);
+      if (data != null) return resolve(JSON.parse(data));
+      const freshData = await cb();
+      RedisClient.set(key, JSON.stringify(freshData));
+      resolve(freshData);
+    });
+  });
 }
-
 
 module.exports = router;
