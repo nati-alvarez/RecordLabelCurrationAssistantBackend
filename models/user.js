@@ -1,4 +1,3 @@
-
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
@@ -17,6 +16,13 @@ const userSchema = new mongoose.Schema({
   topTen: {
     type: Array,
   },
+  inLibrary: {
+    type: Array,
+  },
+  labels: {
+    type: Array,
+  },
+
 });
 //test
 module.exports = mongoose.model("User", userSchema);

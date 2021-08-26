@@ -4,11 +4,22 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const cors = require("cors");
-
+const session = require("express-session");
 const port = process.env.PORT || 3001;
+const cookieParser = require("cookie-parser");
+
+app.use(cookieParser());
+
 app.use(
   cors({
     origin: "*",
+  })
+);
+app.use(
+  session({
+    resave: false,
+    saveUninitialized: false,
+    secret: "secret",
   })
 );
 
@@ -44,7 +55,6 @@ app.get("/authorize", (req, res) => {
     // "https://rlca-backend.herokuapp.com/callback",
     "http://localhost:3001/callback",
     function (err, requestData) {
-      console.log(err, requestData);
       discogsAccessData.push(requestData);
       res.redirect(requestData.authorizeUrl);
     }
@@ -56,24 +66,35 @@ app.get("/authorize", (req, res) => {
 app.get("/callback", (req, res) => {
   var oAuth = new Discogs(discogsAccessData[0]).oauth();
   oAuth.getAccessToken(req.query.oauth_verifier, function (err, accessData) {
-    console.log(err, accessData);
     discogsAccessData.push(accessData);
+    req.session.access = accessData;
+    req.session.save();
+    console.log(req.session);
     // res.redirect("https://sonic-architecture-v1.netlify.app/dashboard");
-    res.redirect("http://localhost:3000/dashboard");
+    res.redirect("http://localhost:3000/authorizing");
   });
 });
 
 // make the OAuth call
 
 app.get("/identity", function (req, res) {
-  console.log(discogsAccessData);
   var dis = new Discogs(discogsAccessData[1]);
+
   dis.getIdentity(function (err, data) {
-    console.log(err, data);
+    console.log(err);
     res.send(data);
   });
 });
 
 // discogs test call
+
+app.get("/search", function (req, res) {
+  console.log(req.params);
+  var dis = new Discogs("Sonic Archtecturev1.0", discogsAccessData[1]);
+  dis.database().search(req.query.discogsAccessparams, function (err, data) {
+    console.log(err);
+    res.send(data);
+  });
+});
 
 app.listen(port, () => console.log(`listening on port ${port}`));

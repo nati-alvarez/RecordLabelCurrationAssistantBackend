@@ -50,7 +50,7 @@ router.post("/", async (req, res) => {
 // Updating One
 router.patch("/:id", getUserById, async (req, res) => {
   res.set("Access-Control-Allow-Origin", "*");
-  console.log(req.body);
+
   if (req.body.name != null) {
     res.user.name = req.body.name;
   }
@@ -60,12 +60,27 @@ router.patch("/:id", getUserById, async (req, res) => {
   if (req.body.avatar != null) {
     res.user.avatar = req.body.avatar;
   }
+  if (req.body.inLibrary != null) {
+    if (req.body.add === true) {
+      res.user.inLibrary.push(req.body.inLibrary);
+    } else {
+      console.log(res.user.inLibrary);
+      let itemIndex = res.user.inLibrary.indexOf(req.body.inLibrary);
+      console.log(itemIndex);
+      res.user.inLibrary.splice(itemIndex, 1);
+      console.log(res.user.inLibrary);
+    }
+  }
   if (req.body.topTen != null) {
     if (res.user.topTen.length >= 10) {
       res.user.topTen.pop();
     }
     res.user.topTen.push(req.body.topTen);
   }
+  if (req.body.labels != null) {
+    res.user.labels.push(req.body.labels);
+  }
+
   try {
     const updatedUser = await res.user.save();
     res.json(updatedUser);
@@ -88,9 +103,7 @@ router.delete("/:id", getUserById, async (req, res) => {
 async function getUserById(req, res, next) {
   let user;
   try {
-    //  Adventure.findOne({ country: 'Croatia' }).exec();
     user = await User.findOne({idNum: req.params.id}).exec();
-    console.log(user);
     if (user == null) {
       return res.status(404).json({message: "Cannot find User"});
     }
@@ -115,20 +128,5 @@ async function getUserByName(req, res, next) {
   res.user = user;
   next();
 }
-
-// async function getUserByEmail(req, res, next) {
-//   let user;
-//   try {
-//     user = await User.findOne({email:req.params.email})
-//     if (user == null) {
-//       return res.status(404).json({message: "Cannot find User"});
-//     }
-//   } catch {
-//     return res.status(500).json({message: err.message});
-//   }
-
-//   res.user = user;
-//   next();
-// }
 
 module.exports = router;
