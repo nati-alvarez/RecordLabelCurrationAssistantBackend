@@ -70,7 +70,7 @@ app.get("/callback", (req, res) => {
     req.session.access = accessData;
     req.session.save();
     console.log(req.session);
-    res.redirect("https://sonic-architecture-v1.netlify.app/dashboard");
+    res.redirect("https://sonic-architecture-v1.netlify.app/authorizing");
     // res.redirect("http://localhost:3000/authorizing");
   });
 });
