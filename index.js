@@ -4,22 +4,45 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const cors = require("cors");
-const session = require("express-session");
+// const session = require("express-session");
 const port = process.env.PORT || 3001;
 const cookieParser = require("cookie-parser");
+var cookieSession = require("cookie-session");
 
 app.use(cookieParser());
 
 app.use(
   cors({
-    origin: "*",
+    credentials: true,
+    origin: [
+      "http://localhost:3000",
+      "https://sonic-architecture-v1.netlify.app",
+    ],
   })
 );
+
+// app.use(function(req, res, next) {
+// res.setHeader(
+//  "Access-Control-Allow-Credentials", "true",
+// )
+// next()
+// })
+// app.use(
+//   session({
+//     secret: 'keyboard cat',
+//     resave: false,
+//     saveUninitialized: true,
+//     cookie: { secure: false }
+//   })
+// );
+app.set("trust proxy", 1); // trust first proxy
 app.use(
-  session({
-    resave: false,
-    saveUninitialized: true,
+  cookieSession({
+    name: "session",
     secret: "secret",
+
+    // Cookie Options
+    maxAge: 24 * 60 * 60 * 1000 * 100, // 2400 hours
   })
 );
 
@@ -55,7 +78,8 @@ app.get("/authorize", (req, res) => {
     // "https://rlca-backend.herokuapp.com/callback",
     "http://localhost:3001/callback",
     function (err, requestData) {
-      discogsAccessData.push(requestData);
+      req.session.requestData = JSON.stringify(requestData);
+
       res.redirect(requestData.authorizeUrl);
     }
   );
@@ -64,12 +88,9 @@ app.get("/authorize", (req, res) => {
 // get access token
 
 app.get("/callback", (req, res) => {
-  var oAuth = new Discogs(discogsAccessData[0]).oauth();
+  var oAuth = new Discogs(JSON.parse(req.session.requestData)).oauth();
   oAuth.getAccessToken(req.query.oauth_verifier, function (err, accessData) {
-    discogsAccessData.push(accessData);
-    req.session.access = accessData;
-    req.session.save();
-    console.log(req.session);
+    req.session.accessData = JSON.stringify(accessData);
     // res.redirect("https://sonic-architecture-v1.netlify.app/authorizing");
     res.redirect("http://localhost:3000/authorizing");
   });
@@ -78,10 +99,9 @@ app.get("/callback", (req, res) => {
 // make the OAuth call
 
 app.get("/identity", function (req, res) {
-  var dis = new Discogs(discogsAccessData[1]);
-
+  var dis = new Discogs(JSON.parse(req.session.accessData));
   dis.getIdentity(function (err, data) {
-    console.log(err);
+    console.log(err, data);
     res.send(data);
   });
 });
@@ -89,7 +109,6 @@ app.get("/identity", function (req, res) {
 // discogs test call
 
 app.get("/search", function (req, res) {
-  console.log(req.params);
   var dis = new Discogs("Sonic Archtecturev1.0", discogsAccessData[1]);
   dis.database().search(req.query.discogsAccessparams, function (err, data) {
     console.log(err);
