@@ -4,6 +4,26 @@ const router = express.Router();
 
 const User = require("../models/user");
 
+router.get("/test2", async (req, res) => {
+  const data = req.session.access;
+  console.log(data)
+  try {
+
+  } catch {
+    res.status(500).json({message: err.message});
+  }
+});
+
+router.get("/test", async (req, res) => {
+  req.session.access = "test";
+  req.session.save();
+  console.log(req.session);
+  try {
+  } catch {
+    res.status(500).json({message: err.message});
+  }
+});
+
 // Getting all
 router.get("/", async (req, res) => {
   res.set("Access-Control-Allow-Origin", "*");

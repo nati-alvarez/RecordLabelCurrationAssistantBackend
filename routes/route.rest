@@ -2,6 +2,10 @@ GET http://localhost:3001/user
 
 ###
 
+GET http://localhost:3001/user/test2
+
+###
+
 GET http://localhost:3001/user/610f04cd7343800a395c79c6
 
 ###
