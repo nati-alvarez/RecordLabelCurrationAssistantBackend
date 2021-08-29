@@ -111,12 +111,13 @@ app.get("/callback", (req, res) => {
 // make the OAuth call
 
 app.get("/identity", function (req, res) {
-  var dis = new Discogs(JSON.parse(req.session.accessData));
-  console.log(req.session.accessData);
-  dis.getIdentity(function (err, data) {
-    console.log(err, data);
-    res.send(data);
-  });
+  res.send(process.env.NODE_ENV === "production", req.session.accessData)
+  // var dis = new Discogs(JSON.parse(req.session.accessData));
+  // console.log(req.session.accessData);
+  // dis.getIdentity(function (err, data) {
+  //   console.log(err, data);
+  //   res.send(data);
+  // });
 });
 
 // discogs test call
