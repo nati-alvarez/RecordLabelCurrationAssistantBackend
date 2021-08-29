@@ -16,7 +16,7 @@ app.use(
     credentials: true,
     origin:
       process.env.NODE_ENV === "production"
-        ? "https://sonic-architecture-v1.netlify.app/"
+        ? "https://sonic-architecture-v1.netlify.app"
         : "http://localhost:3000",
   })
 );
@@ -116,7 +116,7 @@ app.get("/callback", (req, res) => {
 app.get("/identity", function (req, res) {
   let dis = new Discogs(tempArr[1]);
   // let dis = new Discogs(JSON.parse(req.session.accessData));
-  console.log(req.session.accessData);
+  console.log(tempArr[1]);
   dis.getIdentity(function (err, data) {
     console.log(err, data);
     res.send(data);
