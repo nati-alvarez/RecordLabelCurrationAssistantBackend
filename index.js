@@ -111,7 +111,7 @@ app.get("/callback", (req, res) => {
 // make the OAuth call
 
 app.get("/identity", function (req, res) {
-  res.status(200).json(req.session.accessData)
+  res.status(200).send("test")
   // var dis = new Discogs(JSON.parse(req.session.accessData));
   // console.log(req.session.accessData);
   // dis.getIdentity(function (err, data) {
