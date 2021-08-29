@@ -29,10 +29,16 @@ app.use(
 // })
 app.use(
   session({
-    secret: 'keyboard cat',
+    secret: "keyboard cat",
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: process.env.NODE_ENV === "production" }
+    cookie: {
+      secure: process.env.NODE_ENV === "production",
+      sameSite: false,
+      path: "/",
+      httpOnly: true,
+    },
+    maxAge: 24 * 60 * 60 * 1000 * 100, // 2400 hours
   })
 );
 app.set("trust proxy", 1); // trust first proxy
@@ -67,9 +73,14 @@ app.get("/", (req, res) => {
 });
 
 //get Request Token
-const API_BASE_URL = process.env.NODE_ENV === "production" ? "https://rlca-backend.herokuapp.com" : "http://localhost:3001"
-const client_url = process.env.NODE_ENV === "production" ? "https://sonic-architecture-v1.netlify.app" : "http://localhost:3000"
-
+const API_BASE_URL =
+  process.env.NODE_ENV === "production"
+    ? "https://rlca-backend.herokuapp.com"
+    : "http://localhost:3001";
+const client_url =
+  process.env.NODE_ENV === "production"
+    ? "https://sonic-architecture-v1.netlify.app"
+    : "http://localhost:3000";
 
 app.get("/authorize", (req, res) => {
   var oAuth = new Discogs().oauth();
@@ -101,7 +112,7 @@ app.get("/callback", (req, res) => {
 
 app.get("/identity", function (req, res) {
   var dis = new Discogs(JSON.parse(req.session.accessData));
-console.log(req.session.accessData)
+  console.log(req.session.accessData);
   dis.getIdentity(function (err, data) {
     console.log(err, data);
     res.send(data);
@@ -123,18 +134,16 @@ app.get("/search", function (req, res) {
 //search for entries in the users labels
 
 app.get("/usersLabelsSearch", function (req, res) {
-
   var dis = new Discogs(
     "Sonic Archtecturev1.0",
     JSON.parse(req.session.accessData)
   );
-    dis
-      .database()
-      .getLabelReleases(req.query.discogsAccessParams, function (err, data) {
-        console.log(err);
-        res.send(data)
-
-      });
+  dis
+    .database()
+    .getLabelReleases(req.query.discogsAccessParams, function (err, data) {
+      console.log(err);
+      res.send(data);
+    });
 });
 
 app.listen(port, () => console.log(`listening on port ${port}`));
