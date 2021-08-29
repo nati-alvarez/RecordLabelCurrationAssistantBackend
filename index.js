@@ -13,7 +13,7 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    credentials: true,
+    // credentials: true,
     origin: "https://sonic-architecture-v1.netlify.app/",
     // process.env.NODE_ENV === "production"
     //   ? "https://sonic-architecture-v1.netlify.app/"
