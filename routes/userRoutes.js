@@ -4,28 +4,7 @@ const router = express.Router();
 
 const User = require("../models/user");
 
-router.get("/test2", async (req, res) => {
-  const data = req.session.access;
-  console.log(req.session);
-  try {
-    res.send(req.session)
-  } catch {
-    res.status(500).json({message: err.message});
-  }
-});
 
-router.get("/test", async (req, res) => {
-  req.session.access = "test";
-  req.session.save(function(err) {
-    console.log(err)
-  });
-  console.log(req.session);
-  try {
-    res.send(req.session)
-  } catch {
-    res.status(500).json({message: err.message});
-  }
-});
 
 // Getting all
 router.get("/", async (req, res) => {
@@ -84,7 +63,7 @@ router.patch("/:id", getUserById, async (req, res) => {
     res.user.avatar = req.body.avatar;
   }
   if (req.body.inLibrary != null) {
-    if (req.body.add === true) {
+    if (req.body.add) {
       res.user.inLibrary.push(req.body.inLibrary);
     } else {
       let itemIndex = res.user.inLibrary.indexOf(req.body.inLibrary);
@@ -93,7 +72,6 @@ router.patch("/:id", getUserById, async (req, res) => {
     }
   }
   if (req.body.topTen != null) {
-    console.log(req.body)
     if (req.body.inTopTen) {
       if (res.user.topTen.length >= 10) {
         res.user.topTen.pop();
@@ -105,7 +83,15 @@ router.patch("/:id", getUserById, async (req, res) => {
     }
   }
   if (req.body.labels != null) {
-    res.user.labels.push(req.body.labels);
+    console.log("hit")
+    if (req.body.add) {
+      res.user.labels.push(req.body.labels);
+    } else {
+      let itemIndex = res.user.labels.indexOf(req.body.labels);
+
+      res.user.labels.splice(itemIndex, 1);
+    }
+    
   }
 
   try {

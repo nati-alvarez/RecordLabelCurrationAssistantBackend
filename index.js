@@ -75,8 +75,8 @@ app.get("/authorize", (req, res) => {
   oAuth.getRequestToken(
     process.env.DISCOGS_API_KEY,
     process.env.DISCOGS_API_SECRET,
-    // "https://rlca-backend.herokuapp.com/callback",
-    "http://localhost:3001/callback",
+    "https://rlca-backend.herokuapp.com/callback",
+    // "http://localhost:3001/callback",
     function (err, requestData) {
       req.session.requestData = JSON.stringify(requestData);
 
@@ -91,8 +91,8 @@ app.get("/callback", (req, res) => {
   var oAuth = new Discogs(JSON.parse(req.session.requestData)).oauth();
   oAuth.getAccessToken(req.query.oauth_verifier, function (err, accessData) {
     req.session.accessData = JSON.stringify(accessData);
-    // res.redirect("https://sonic-architecture-v1.netlify.app/authorizing");
-    res.redirect("http://localhost:3000/authorizing");
+    res.redirect("https://sonic-architecture-v1.netlify.app/authorizing");
+    // res.redirect("http://localhost:3000/authorizing");
   });
 });
 
@@ -107,13 +107,32 @@ app.get("/identity", function (req, res) {
 });
 
 // discogs test call
-
+//search for a new label
 app.get("/search", function (req, res) {
-  var dis = new Discogs("Sonic Archtecturev1.0", discogsAccessData[1]);
+  var dis = new Discogs(
+    "Sonic Archtecturev1.0",
+    JSON.parse(req.session.accessData)
+  );
   dis.database().search(req.query.discogsAccessparams, function (err, data) {
-    console.log(err);
+    console.log(err, data);
     res.send(data);
   });
+});
+//search for entries in the users labels
+
+app.get("/usersLabelsSearch", function (req, res) {
+
+  var dis = new Discogs(
+    "Sonic Archtecturev1.0",
+    JSON.parse(req.session.accessData)
+  );
+    dis
+      .database()
+      .getLabelReleases(req.query.discogsAccessParams, function (err, data) {
+        console.log(err);
+        res.send(data)
+
+      });
 });
 
 app.listen(port, () => console.log(`listening on port ${port}`));
