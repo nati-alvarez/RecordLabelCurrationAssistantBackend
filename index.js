@@ -4,10 +4,10 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const cors = require("cors");
-// const session = require("express-session");
+const session = require("express-session");
 const port = process.env.PORT || 3001;
 const cookieParser = require("cookie-parser");
-var cookieSession = require("cookie-session");
+// var cookieSession = require("cookie-session");
 
 app.use(cookieParser());
 
@@ -27,24 +27,24 @@ app.use(
 // )
 // next()
 // })
-// app.use(
-//   session({
-//     secret: 'keyboard cat',
-//     resave: false,
-//     saveUninitialized: true,
-//     cookie: { secure: false }
-//   })
-// );
-app.set("trust proxy", 1); // trust first proxy
 app.use(
-  cookieSession({
-    name: "session",
-    secret: "secret",
-    secure: process.env.NODE_ENV === "production",
-    // Cookie Options
-    maxAge: 24 * 60 * 60 * 1000 * 100, // 2400 hours
+  session({
+    secret: 'keyboard cat',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: process.env.NODE_ENV === "production" }
   })
 );
+app.set("trust proxy", 1); // trust first proxy
+// app.use(
+//   cookieSession({
+//     name: "session",
+//     secret: "secret",
+//     secure: process.env.NODE_ENV === "production",
+//     // Cookie Options
+//     maxAge: 24 * 60 * 60 * 1000 * 100, // 2400 hours
+//   })
+// );
 
 mongoose.connect(process.env.DATABASE_URL, {
   useUnifiedTopology: true,
@@ -101,7 +101,7 @@ app.get("/callback", (req, res) => {
 
 app.get("/identity", function (req, res) {
   var dis = new Discogs(JSON.parse(req.session.accessData));
-
+console.log(req.session.accessData)
   dis.getIdentity(function (err, data) {
     console.log(err, data);
     res.send(data);
