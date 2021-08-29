@@ -7,17 +7,17 @@ const cors = require("cors");
 // const session = require("express-session");
 const port = process.env.PORT || 3001;
 const cookieParser = require("cookie-parser");
-var cookieSession = require("cookie-session");
+let cookieSession = require("cookie-session");
 
 app.use(cookieParser());
 
 app.use(
   cors({
     credentials: true,
-    origin: "https://sonic-architecture-v1.netlify.app",
-    // process.env.NODE_ENV === "production"
-    //   ? "https://sonic-architecture-v1.netlify.app/"
-    //   : "http://localhost:3000",
+    origin:
+      process.env.NODE_ENV === "production"
+        ? "https://sonic-architecture-v1.netlify.app/"
+        : "http://localhost:3000",
   })
 );
 
@@ -72,7 +72,6 @@ app.get("/", (req, res) => {
   });
 });
 
-//get Request Token
 const API_BASE_URL =
   process.env.NODE_ENV === "production"
     ? "https://rlca-backend.herokuapp.com"
@@ -82,8 +81,10 @@ const client_url =
     ? "https://sonic-architecture-v1.netlify.app"
     : "http://localhost:3000";
 
+const tempArr = [];
+//get Request Token
 app.get("/authorize", (req, res) => {
-  var oAuth = new Discogs().oauth();
+  let oAuth = new Discogs().oauth();
   oAuth.getRequestToken(
     process.env.DISCOGS_API_KEY,
     process.env.DISCOGS_API_SECRET,
@@ -91,7 +92,7 @@ app.get("/authorize", (req, res) => {
     // "http://localhost:3001/callback",
     function (err, requestData) {
       req.session.requestData = JSON.stringify(requestData);
-
+      tempArr.push(requestData);
       res.redirect(requestData.authorizeUrl);
     }
   );
@@ -100,9 +101,11 @@ app.get("/authorize", (req, res) => {
 // get access token
 
 app.get("/callback", (req, res) => {
-  var oAuth = new Discogs(JSON.parse(req.session.requestData)).oauth();
+  let oAuth = new Discogs(tempArr[0]).oauth();
+  // let oAuth = new Discogs(JSON.parse(req.session.requestData)).oauth();
   oAuth.getAccessToken(req.query.oauth_verifier, function (err, accessData) {
     req.session.accessData = JSON.stringify(accessData);
+    tempArr.push(accessData);
     res.redirect(`${client_url}/authorizing`);
     // res.redirect("http://localhost:3000/authorizing");
   });
@@ -111,21 +114,22 @@ app.get("/callback", (req, res) => {
 // make the OAuth call
 
 app.get("/identity", function (req, res) {
-  res.status(200).json({test: "test", accessData: req.session});
-  // var dis = new Discogs(JSON.parse(req.session.accessData));
-  // console.log(req.session.accessData);
-  // dis.getIdentity(function (err, data) {
-  //   console.log(err, data);
-  //   res.send(data);
-  // });
+  let dis = new Discogs(tempArr[1]);
+  // let dis = new Discogs(JSON.parse(req.session.accessData));
+  console.log(req.session.accessData);
+  dis.getIdentity(function (err, data) {
+    console.log(err, data);
+    res.send(data);
+  });
 });
 
 // discogs test call
 //search for a new label
 app.get("/search", function (req, res) {
-  var dis = new Discogs(
+  let dis = new Discogs(
     "Sonic Archtecturev1.0",
-    JSON.parse(req.session.accessData)
+    tempArr[1]
+    // JSON.parse(req.session.accessData)
   );
   dis.database().search(req.query.discogsAccessparams, function (err, data) {
     console.log(err, data);
@@ -135,9 +139,10 @@ app.get("/search", function (req, res) {
 //search for entries in the users labels
 
 app.get("/usersLabelsSearch", function (req, res) {
-  var dis = new Discogs(
+  let dis = new Discogs(
     "Sonic Archtecturev1.0",
-    JSON.parse(req.session.accessData)
+    tempArr[1]
+    // JSON.parse(req.session.accessData)
   );
   dis
     .database()
