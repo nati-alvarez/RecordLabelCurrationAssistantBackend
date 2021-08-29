@@ -14,10 +14,10 @@ app.use(cookieParser());
 app.use(
   cors({
     credentials: true,
-    origin:
-      process.env.NODE_ENV === "production"
-        ? "https://sonic-architecture-v1.netlify.app"
-        : "http://localhost:3000",
+    origin: "https://sonic-architecture-v1.netlify.app/",
+    // process.env.NODE_ENV === "production"
+    //   ? "https://sonic-architecture-v1.netlify.app/"
+    //   : "http://localhost:3000",
   })
 );
 
@@ -111,7 +111,7 @@ app.get("/callback", (req, res) => {
 // make the OAuth call
 
 app.get("/identity", function (req, res) {
-  res.send(process.env.NODE_ENV === "production", req.session.accessData)
+  res.send(process.env.NODE_ENV === "production", req.session.accessData);
   // var dis = new Discogs(JSON.parse(req.session.accessData));
   // console.log(req.session.accessData);
   // dis.getIdentity(function (err, data) {
