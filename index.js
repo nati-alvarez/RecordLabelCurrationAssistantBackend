@@ -40,7 +40,7 @@ app.use(
   cookieSession({
     name: "session",
     secret: "secret",
-
+    secure: process.env.NODE_ENV === "production",
     // Cookie Options
     maxAge: 24 * 60 * 60 * 1000 * 100, // 2400 hours
   })
@@ -67,15 +67,16 @@ app.get("/", (req, res) => {
 });
 
 //get Request Token
+const API_BASE_URL = process.env.NODE_ENV === "production" ? "https://rlca-backend.herokuapp.com" : "http://localhost:3001"
+const client_url = process.env.NODE_ENV === "production" ? "https://sonic-architecture-v1.netlify.app" : "http://localhost:3000"
 
-const discogsAccessData = [];
 
 app.get("/authorize", (req, res) => {
   var oAuth = new Discogs().oauth();
   oAuth.getRequestToken(
     process.env.DISCOGS_API_KEY,
     process.env.DISCOGS_API_SECRET,
-    "https://rlca-backend.herokuapp.com/callback",
+    `${API_BASE_URL}/callback`,
     // "http://localhost:3001/callback",
     function (err, requestData) {
       req.session.requestData = JSON.stringify(requestData);
@@ -91,7 +92,7 @@ app.get("/callback", (req, res) => {
   var oAuth = new Discogs(JSON.parse(req.session.requestData)).oauth();
   oAuth.getAccessToken(req.query.oauth_verifier, function (err, accessData) {
     req.session.accessData = JSON.stringify(accessData);
-    res.redirect("https://sonic-architecture-v1.netlify.app/authorizing");
+    res.redirect(`${client_url}/authorizing`);
     // res.redirect("http://localhost:3000/authorizing");
   });
 });
@@ -100,6 +101,7 @@ app.get("/callback", (req, res) => {
 
 app.get("/identity", function (req, res) {
   var dis = new Discogs(JSON.parse(req.session.accessData));
+
   dis.getIdentity(function (err, data) {
     console.log(err, data);
     res.send(data);
