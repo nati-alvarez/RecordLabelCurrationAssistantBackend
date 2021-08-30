@@ -33,7 +33,7 @@ app.use(
     resave: false,
     saveUninitialized: true,
     cookie: {
-      secure: process.env.NODE_ENV === "production",
+      secure: process.env.HEROKUDB ? true : false,
       sameSite: false,
       path: "/",
       httpOnly: true,
