@@ -14,7 +14,8 @@ app.use(cookieParser());
 app.use(
   cors({
     credentials: true,
-    origin: process.env.NETLIFY || "http://localhost:3000",
+    origin:
+    process.env.NETLIFY || "http://localhost:3000"
   })
 );
 
@@ -181,11 +182,11 @@ app.get("/callback", (req, res) => {
 // // make the OAuth call
 
 app.get("/identity", function (req, res) {
-  res.status(200).json(`/identity accessData: ${req.session.accessData}`)
+  // res.status(200).json(`/identity accessData: ${req.session.accessData}`)
   let dis = new Discogs(JSON.parse(req.session.accessData));
   dis.getIdentity(function (err, data) {
     console.log(err, data);
-    // res.send(data);
+    res.send(data);
   });
 });
 
