@@ -4,10 +4,10 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const cors = require("cors");
-// const session = require("express-session");
+const session = require("express-session");
 const port = process.env.PORT || 3001;
 const cookieParser = require("cookie-parser");
-let cookieSession = require("cookie-session");
+// let cookieSession = require("cookie-session");
 
 app.use(cookieParser());
 
@@ -21,42 +21,48 @@ app.use(
   })
 );
 
-// app.use(function(req, res, next) {
-// res.setHeader(
-//  "Access-Control-Allow-Credentials", "true",
-// )
-// next()
-// })
-// app.use(
-//   session({
-//     secret: "keyboard cat",
-//     resave: false,
-//     saveUninitialized: true,
-//     cookie: {
-//       secure: process.env.NODE_ENV === "production",
-//       sameSite: false,
-//       path: "/",
-//       httpOnly: true,
-//     },
-//     maxAge: 24 * 60 * 60 * 1000 * 100, // 2400 hours
-//   })
-// );
-app.set("trust proxy", 1); // trust first proxy
+app.use(function (req, res, next) {
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  next();
+});
+
+//WITH SESSION
 app.use(
-  cookieSession({
-    name: "session",
-    secret: "secret",
-    secure: process.env.NODE_ENV === "production",
-    // Cookie Options
+  session({
+    secret: "keyboard cat",
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+      secure: process.env.NODE_ENV === "production",
+      sameSite: false,
+      path: "/",
+      httpOnly: true,
+    },
     maxAge: 24 * 60 * 60 * 1000 * 100, // 2400 hours
   })
 );
+app.set("trust proxy", 1); // trust first proxy
+
+
+//DB CONNECTION
 
 mongoose.connect(process.env.DATABASE_URL, {
   useUnifiedTopology: true,
   useNewUrlParser: true,
 });
 const db = mongoose.connection;
+
+// URL'S
+
+const API_BASE_URL =
+  process.env.NODE_ENV === "production"
+    ? "https://rlca-backend.herokuapp.com"
+    : "http://localhost:3001";
+const client_url =
+  process.env.NODE_ENV === "production"
+    ? "https://sonic-architecture-v1.netlify.app"
+    : "http://localhost:3000";
+
 db.on("error", (error) => console.error(error));
 db.once("open", () => console.log("Connected to Database"));
 
@@ -72,58 +78,47 @@ app.get("/", (req, res) => {
   });
 });
 
-const API_BASE_URL =
-  process.env.NODE_ENV === "production"
-    ? "https://rlca-backend.herokuapp.com"
-    : "http://localhost:3001";
-const client_url =
-  process.env.NODE_ENV === "production"
-    ? "https://sonic-architecture-v1.netlify.app"
-    : "http://localhost:3000";
 
-const tempArr = [];
+
+
 //get Request Token
+
+
+
 app.get("/authorize", (req, res) => {
   let oAuth = new Discogs().oauth();
   oAuth.getRequestToken(
     process.env.DISCOGS_API_KEY,
     process.env.DISCOGS_API_SECRET,
     `${API_BASE_URL}/callback`,
-    // "http://localhost:3001/callback",
     function (err, requestData) {
       req.session.requestData = JSON.stringify(requestData);
-      tempArr.push(requestData);
+      // res.status(200).json(`/authorize: ${req.session.requestData}`)
       res.redirect(requestData.authorizeUrl);
-    }
-  );
+});
 });
 
-// get access token
+// // get access token
 
 app.get("/callback", (req, res) => {
-  let oAuth = new Discogs(tempArr[0]).oauth();
-  // let oAuth = new Discogs(JSON.parse(req.session.requestData)).oauth();
+  let oAuth = new Discogs(JSON.parse(req.session.requestData)).oauth();
   oAuth.getAccessToken(req.query.oauth_verifier, function (err, accessData) {
-    req.session.accessData = JSON.stringify(accessData);
-    tempArr.push(accessData);
-    res.redirect(`${client_url}/authorizing`);
-    // res.redirect("http://localhost:3000/authorizing");
+    req.session.requestData = JSON.stringify(accessData);
+          res.redirect(`${client_url}/authorizing`);
   });
 });
 
-// make the OAuth call
+// // make the OAuth call
 
 app.get("/identity", function (req, res) {
-  let dis = new Discogs(tempArr[1]);
-  // let dis = new Discogs(JSON.parse(req.session.accessData));
-  console.log(tempArr[1]);
+      // res.status(200).json(`/identity accessData: ${req.session.accessData}`)
+      let dis = new Discogs(JSON.parse(req.session.requestData));
   dis.getIdentity(function (err, data) {
     console.log(err, data);
     res.send(data);
   });
 });
 
-// discogs test call
 //search for a new label
 app.get("/search", function (req, res) {
   let dis = new Discogs(
@@ -153,3 +148,4 @@ app.get("/usersLabelsSearch", function (req, res) {
 });
 
 app.listen(port, () => console.log(`listening on port ${port}`));
+
