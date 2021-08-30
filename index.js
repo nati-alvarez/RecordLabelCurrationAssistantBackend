@@ -35,6 +35,7 @@ app.use(
     resave: false,
     saveUninitialized: true,
     proxy : true,
+    store,
     cookie: {
       secure: process.env.NODE_ENV === "production",
       sameSite: false,
@@ -75,6 +76,7 @@ const userRouter = require("./routes/userRoutes");
 app.use("/user", userRouter);
 
 app.get("/", (req, res) => {
+  console.log(store)
   res.json({
     message: "Welcome to the API",
   });
@@ -95,6 +97,8 @@ app.get("/authorize", (req, res) => {
     `${API_BASE_URL}/callback`,
     function (err, requestData) {
       req.session.requestData = JSON.stringify(requestData);
+      res.cookie('reqData',requestData, { maxAge: 900000, httpOnly: true });
+      console.log('cookie created successfully');
       // res.status(200).json(`/authorize: ${req.session.requestData}`)
       res.redirect(requestData.authorizeUrl);
 });
@@ -103,9 +107,11 @@ app.get("/authorize", (req, res) => {
 // // get access token
 
 app.get("/callback", (req, res) => {
-  let oAuth = new Discogs(JSON.parse(req.session.requestData)).oauth();
+  let oAuth = new Discogs(req.cookies.reqData).oauth();
+  // let oAuth = new Discogs(JSON.parse(req.session.requestData)).oauth();
   oAuth.getAccessToken(req.query.oauth_verifier, function (err, accessData) {
     req.session.requestData = JSON.stringify(accessData);
+    res.cookie('accessData',accessData, { maxAge: 900000, httpOnly: true });
           res.redirect(`${client_url}/authorizing`);
   });
 });
@@ -114,7 +120,8 @@ app.get("/callback", (req, res) => {
 
 app.get("/identity", function (req, res) {
       // res.status(200).json(`/identity accessData: ${req.session.accessData}`)
-      let dis = new Discogs(JSON.parse(req.session.requestData));
+      let dis = new Discogs(req.cookies.accessData);
+      // let dis = new Discogs(JSON.parse(req.cookies.requestData));
   dis.getIdentity(function (err, data) {
     console.log(err, data);
     res.send(data);
