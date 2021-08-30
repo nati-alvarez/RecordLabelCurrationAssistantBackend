@@ -14,10 +14,7 @@ app.use(cookieParser());
 app.use(
   cors({
     credentials: true,
-    origin:
-      process.env.NODE_ENV === "production"
-        ? "https://sonic-architecture-v1.netlify.app"
-        : "http://localhost:3000",
+    origin: process.env.NETLIFY || "http://localhost:3000",
   })
 );
 
