@@ -75,7 +75,6 @@ const userRouter = require("./routes/userRoutes");
 app.use("/user", userRouter);
 
 app.get("/", (req, res) => {
-  console.log(store)
   res.json({
     message: "Welcome to the API",
   });
