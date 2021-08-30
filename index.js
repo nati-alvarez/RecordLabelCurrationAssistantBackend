@@ -32,6 +32,7 @@ app.use(
     secret: "keyboard cat",
     resave: false,
     saveUninitialized: true,
+    proxy : true,
     cookie: {
       secure: process.env.NODE_ENV === "production",
       sameSite: false,
@@ -41,7 +42,7 @@ app.use(
     maxAge: 24 * 60 * 60 * 1000 * 100, // 2400 hours
   })
 );
-app.set("trust proxy", true); // trust first proxy
+app.set("trust proxy", 1); // trust first proxy
 
 
 //DB CONNECTION
