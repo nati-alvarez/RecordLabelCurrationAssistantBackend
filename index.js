@@ -106,10 +106,10 @@ app.get("/authorize", (req, res) => {
 
 app.get("/callback", (req, res) => {
   console.log(req.cookies)
-  let oAuth = new Discogs(req.cookies.reqData).oauth();
+  let oAuth = new Discogs(req.session.requestData).oauth();
   // let oAuth = new Discogs(JSON.parse(req.session.requestData)).oauth();
   oAuth.getAccessToken(req.query.oauth_verifier, function (err, accessData) {
-    req.session.requestData = JSON.stringify(accessData);
+    req.session.accessData = JSON.stringify(accessData);
     res.cookie('accessData',accessData, { maxAge: 900000, httpOnly: true });
           res.redirect(`${client_url}/authorizing`);
   });
@@ -120,8 +120,8 @@ app.get("/callback", (req, res) => {
 app.get("/identity", function (req, res) {
   console.log(req.cookies)
       // res.status(200).json(`/identity accessData: ${req.session.accessData}`)
-      let dis = new Discogs(req.cookies.accessData);
-      // let dis = new Discogs(JSON.parse(req.cookies.requestData));
+      // let dis = new Discogs(req.session.accessData);
+      let dis = new Discogs(JSON.parse(req.cookies.accessData));
   dis.getIdentity(function (err, data) {
     console.log(err, data);
     res.send(data);
