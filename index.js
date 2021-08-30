@@ -185,7 +185,7 @@ app.get("/callback", (req, res) => {
   let oAuth = new Discogs(JSON.parse(req.session.requestData)).oauth();
   oAuth.getAccessToken(req.query.oauth_verifier, function (err, accessData) {
     req.session.accessData = JSON.stringify(accessData);
-      res.status(200).json(`/callback: ${req.session.accessData}`).redirect(`${client_url}/authorizing`);
+      res.status(200).json(`/callback: ${req.session.accessData}`)
   });
 });
 
