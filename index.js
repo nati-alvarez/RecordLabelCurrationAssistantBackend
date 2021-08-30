@@ -29,14 +29,14 @@ app.use(function (req, res, next) {
 //WITH SESSION
 app.use(
   session({
-    secret: "keyboard cat",
+    secret: "qcr application",
     resave: false,
     saveUninitialized: true,
     cookie: {
       secure: process.env.NODE_ENV === "production",
       sameSite: false,
       path: "/",
-      httpOnly: true,
+      // httpOnly: true,
     },
     maxAge: 24 * 60 * 60 * 1000 * 100, // 2400 hours
   })
