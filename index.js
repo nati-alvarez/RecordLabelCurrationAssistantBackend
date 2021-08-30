@@ -111,12 +111,11 @@ app.get("/callback", (req, res) => {
 // // make the OAuth call
 
 app.get("/identity", function (req, res) {
-      res.status(200).json(`/identity accessData: ${req.session.accessData}`)
-      // let dis = new Discogs(JSON.parse(req.session.requestData));
-  // dis.getIdentity(function (err, data) {
-  //   console.log(err, data);
-  //   res.send(data);
-  // });
+      let dis = new Discogs(JSON.parse(req.session.accessData));
+  dis.getIdentity(function (err, data) {
+    console.log(err, data);
+    res.send(data);
+  });
 });
 
 //search for a new label
