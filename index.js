@@ -64,15 +64,10 @@ mongoose.connect(process.env.DATABASE_URL, {
 const db = mongoose.connection;
 
 // URL'S
+console.log(process.env.NODE_ENV);
+const API_BASE_URL = process.env.HEROKUDB || "http://localhost:3001";
 
-const API_BASE_URL =
-  process.env.NODE_ENV === "production"
-    ? "https://rlca-backend.herokuapp.com"
-    : "http://localhost:3001";
-const client_url =
-  process.env.NODE_ENV === "production"
-    ? "https://sonic-architecture-v1.netlify.app"
-    : "http://localhost:3000";
+const client_url = process.env.NETLIFY || "http://localhost:3000";
 
 db.on("error", (error) => console.error(error));
 db.once("open", () => console.log("Connected to Database"));
@@ -140,7 +135,6 @@ app.get("/", (req, res) => {
 //   });
 // });
 
-
 // //search for a new label
 // app.get("/search", function (req, res) {
 //   console.log(`/search requestData: ${req.session.requestData}`);
@@ -158,14 +152,9 @@ app.get("/", (req, res) => {
 //   });
 // });
 
-
-
 // LIVE SITE
 
-
 //get Request Token
-
-
 
 app.get("/authorize", (req, res) => {
   let oAuth = new Discogs().oauth();
@@ -177,7 +166,8 @@ app.get("/authorize", (req, res) => {
       req.session.requestData = JSON.stringify(requestData);
       // res.status(200).json(`/authorize: ${req.session.requestData}`)
       res.redirect(requestData.authorizeUrl);
-});
+    }
+  );
 });
 
 // // get access token
@@ -186,23 +176,21 @@ app.get("/callback", (req, res) => {
   let oAuth = new Discogs(JSON.parse(req.session.requestData)).oauth();
   oAuth.getAccessToken(req.query.oauth_verifier, function (err, accessData) {
     req.session.accessData = JSON.stringify(accessData);
-      // res.status(200).json(`/callback: ${req.session.accessData}`)
-      res.redirect(`${client_url}/authorizing`);
+    // res.status(200).json(`/callback: ${req.session.accessData}`)
+    res.redirect(`${client_url}/authorizing`);
   });
 });
 
 // // make the OAuth call
 
 app.get("/identity", function (req, res) {
-      // res.status(200).json(`/identity accessData: ${req.session.accessData}`)
-      let dis = new Discogs(JSON.parse(req.session.accessData));
+  // res.status(200).json(`/identity accessData: ${req.session.accessData}`)
+  let dis = new Discogs(JSON.parse(req.session.accessData));
   dis.getIdentity(function (err, data) {
     console.log(err, data);
     res.send(data);
   });
 });
-
-
 
 // //search for a new label
 // app.get("/search", function (req, res) {
@@ -220,11 +208,6 @@ app.get("/identity", function (req, res) {
 //     res.send(data);
 //   });
 // });
-
-
-
-
-
 
 //search for entries in the users labels
 
