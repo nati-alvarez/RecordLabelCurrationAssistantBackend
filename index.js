@@ -25,6 +25,8 @@ app.use(function (req, res, next) {
   res.setHeader("Access-Control-Allow-Credentials", "true");
   next();
 });
+app.enable('trust proxy')
+app.set("trust proxy", 1); // trust first proxy
 
 //WITH SESSION
 app.use(
@@ -42,7 +44,6 @@ app.use(
     maxAge: 24 * 60 * 60 * 1000 * 100, // 2400 hours
   })
 );
-app.set("trust proxy", 1); // trust first proxy
 
 
 //DB CONNECTION
