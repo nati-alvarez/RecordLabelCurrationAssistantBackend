@@ -103,7 +103,7 @@ app.get("/authorize", (req, res) => {
 app.get("/callback", (req, res) => {
   let oAuth = new Discogs(JSON.parse(req.session.requestData)).oauth();
   oAuth.getAccessToken(req.query.oauth_verifier, function (err, accessData) {
-    req.session.requestData = JSON.stringify(accessData);
+    req.session.requestData  = JSON.stringify(accessData);
           res.redirect(`${client_url}/authorizing`);
   });
 });
