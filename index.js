@@ -175,7 +175,7 @@ app.get("/authorize", (req, res) => {
     `${API_BASE_URL}/callback`,
     function (err, requestData) {
       req.session.requestData = JSON.stringify(requestData);
-      res.status(200).json(`/authorize: ${req.session.requestData}`).redirect(requestData.authorizeUrl);
+      res.status(200).json(`/authorize: ${req.session.requestData}`)
 });
 });
 
