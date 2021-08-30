@@ -175,7 +175,8 @@ app.get("/authorize", (req, res) => {
     `${API_BASE_URL}/callback`,
     function (err, requestData) {
       req.session.requestData = JSON.stringify(requestData);
-      res.status(200).json(`/authorize: ${req.session.requestData}`)
+      // res.status(200).json(`/authorize: ${req.session.requestData}`)
+      res.redirect(requestData.authorizeUrl);
 });
 });
 
@@ -193,7 +194,7 @@ app.get("/callback", (req, res) => {
 
 app.get("/identity", function (req, res) {
       // res.status(200).json(`/identity accessData: ${req.session.accessData}`)
-      let dis = new Discogs(JSON.parse(req.session.equestData));
+      let dis = new Discogs(JSON.parse(req.session.requestData));
   dis.getIdentity(function (err, data) {
     console.log(err, data);
     res.send(data);
