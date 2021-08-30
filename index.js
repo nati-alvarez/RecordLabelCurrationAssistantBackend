@@ -41,7 +41,7 @@ app.use(
     maxAge: 24 * 60 * 60 * 1000 * 100, // 2400 hours
   })
 );
-app.set("trust proxy", 1); // trust first proxy
+app.set("trust proxy", true); // trust first proxy
 
 
 //DB CONNECTION
