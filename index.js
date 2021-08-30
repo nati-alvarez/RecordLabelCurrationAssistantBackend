@@ -29,19 +29,19 @@ app.use(function (req, res, next) {
 //WITH SESSION
 app.use(
   session({
-    secret: "qcr application",
+    secret: "keyboard cat",
     resave: false,
     saveUninitialized: true,
     cookie: {
       secure: process.env.NODE_ENV === "production",
       sameSite: false,
       path: "/",
-      // httpOnly: true,
+      httpOnly: true,
     },
     maxAge: 24 * 60 * 60 * 1000 * 100, // 2400 hours
   })
 );
-app.set("trust proxy", true); // trust first proxy
+app.set("trust proxy", 1); // trust first proxy
 
 
 //DB CONNECTION
@@ -103,7 +103,7 @@ app.get("/authorize", (req, res) => {
 app.get("/callback", (req, res) => {
   let oAuth = new Discogs(JSON.parse(req.session.requestData)).oauth();
   oAuth.getAccessToken(req.query.oauth_verifier, function (err, accessData) {
-    req.session.requestData  = JSON.stringify(accessData);
+    req.session.requestData = JSON.stringify(accessData);
           res.redirect(`${client_url}/authorizing`);
   });
 });
@@ -111,7 +111,8 @@ app.get("/callback", (req, res) => {
 // // make the OAuth call
 
 app.get("/identity", function (req, res) {
-      let dis = new Discogs(JSON.parse(req.session.accessData));
+      // res.status(200).json(`/identity accessData: ${req.session.accessData}`)
+      let dis = new Discogs(JSON.parse(req.session.requestData));
   dis.getIdentity(function (err, data) {
     console.log(err, data);
     res.send(data);
