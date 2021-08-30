@@ -161,7 +161,7 @@ app.get("/authorize", (req, res) => {
   oAuth.getRequestToken(
     process.env.DISCOGS_API_KEY,
     process.env.DISCOGS_API_SECRET,
-    `${API_BASE_URL}/callback`,
+    `https://rlca-backend.herokuapp.com/callback`,
     function (err, requestData) {
       req.session.requestData = JSON.stringify(requestData);
       // res.status(200).json(`/authorize: ${req.session.requestData}`)
@@ -177,7 +177,7 @@ app.get("/callback", (req, res) => {
   oAuth.getAccessToken(req.query.oauth_verifier, function (err, accessData) {
     req.session.accessData = JSON.stringify(accessData);
     // res.status(200).json(`/callback: ${req.session.accessData}`)
-    res.redirect(`${client_url}/authorizing`);
+    res.redirect(`https://sonic-architecture-v1.netlify.app/authorizing`);
   });
 });
 
