@@ -91,7 +91,7 @@ app.get("/", (req, res) => {
 
 //LOCALHOST
 
-//get Request Token
+// // get Request Token
 // app.get("/authorize", (req, res) => {
 //   let oAuth = new Discogs().oauth();
 //   oAuth.getRequestToken(
@@ -184,8 +184,8 @@ app.get("/authorize", (req, res) => {
 app.get("/callback", (req, res) => {
   let oAuth = new Discogs(JSON.parse(req.session.requestData)).oauth();
   oAuth.getAccessToken(req.query.oauth_verifier, function (err, accessData) {
-    req.session.accessData = JSON.stringify(accessData);
-      res.status(200).json(`/callback: ${req.session.accessData}`)
+    req.session.requestData = JSON.stringify(accessData);
+      res.status(200).json(`/callback: ${req.session.requestData}`)
   });
 });
 
@@ -193,15 +193,13 @@ app.get("/callback", (req, res) => {
 
 app.get("/identity", function (req, res) {
       // res.status(200).json(`/identity accessData: ${req.session.accessData}`)
-      let dis = new Discogs(JSON.parse(req.session.accessData));
+      let dis = new Discogs(JSON.parse(req.session.equestData));
   dis.getIdentity(function (err, data) {
     console.log(err, data);
     res.send(data);
   });
 });
 
-
-// });
 
 
 // //search for a new label
