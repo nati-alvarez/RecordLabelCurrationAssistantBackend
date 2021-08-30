@@ -21,12 +21,10 @@ app.use(
   })
 );
 
-app.use(function(req, res, next) {
-res.setHeader(
- "Access-Control-Allow-Credentials", "true",
-)
-next()
-})
+app.use(function (req, res, next) {
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  next();
+});
 
 //WITH SESSION
 app.use(
@@ -85,17 +83,90 @@ const userRouter = require("./routes/userRoutes");
 
 app.use("/user", userRouter);
 
-
 app.get("/", (req, res) => {
   res.json({
     message: "Welcome to the API",
   });
 });
 
+//LOCALHOST
 
+//get Request Token
+// app.get("/authorize", (req, res) => {
+//   let oAuth = new Discogs().oauth();
+//   oAuth.getRequestToken(
+//     process.env.DISCOGS_API_KEY,
+//     process.env.DISCOGS_API_SECRET,
+//     `${API_BASE_URL}/callback`,
+//     function (err, requestData) {
+//       req.session.requestData = JSON.stringify(requestData);
+//       console.log(`/Authorize ${req.session.requestData}`);
+//       console.log(
+//         "%c-----------------------------------------------------------------",
+//         "color: yellow"
+//       );
+//       res.redirect(requestData.authorizeUrl);
+//     }
+//   );
+// });
+
+// // get access token
+
+// app.get("/callback", (req, res) => {
+//   let oAuth = new Discogs(JSON.parse(req.session.requestData)).oauth();
+//   oAuth.getAccessToken(req.query.oauth_verifier, function (err, accessData) {
+//     req.session.accessData = JSON.stringify(accessData);
+//     console.log(`/Callback requestData: ${req.session.requestData}`);
+//     console.log(`/Callback accessData: ${req.session.accessData}`);
+//     console.log(
+//       "-----------------------------------------------------------------"
+//     );
+//     res.redirect(`${client_url}/authorizing`);
+//   });
+// });
+
+// // make the OAuth call
+
+// app.get("/identity", function (req, res) {
+//   console.log(`/identity requestData: ${req.session.requestData}`);
+//   console.log(`/identity accessData: ${req.session.accessData}`);
+//   console.log(
+//     "-----------------------------------------------------------------"
+//   );
+//   let dis = new Discogs(JSON.parse(req.session.accessData));
+//   dis.getIdentity(function (err, data) {
+//     console.log(err, data);
+//     res.send(data);
+//   });
+// });
+
+
+// //search for a new label
+// app.get("/search", function (req, res) {
+//   console.log(`/search requestData: ${req.session.requestData}`);
+//   console.log(`/search accessData: ${req.session.accessData}`);
+//   console.log(
+//     "-----------------------------------------------------------------"
+//   );
+//   let dis = new Discogs(
+//     "Sonic Archtecturev1.0",
+//     JSON.parse(req.session.accessData)
+//   );
+//   dis.database().search(req.query.discogsAccessparams, function (err, data) {
+//     console.log(err);
+//     res.send(data);
+//   });
+// });
+
+
+
+// LIVE SITE
 
 
 //get Request Token
+
+
+
 app.get("/authorize", (req, res) => {
   let oAuth = new Discogs().oauth();
   oAuth.getRequestToken(
@@ -104,43 +175,56 @@ app.get("/authorize", (req, res) => {
     `${API_BASE_URL}/callback`,
     function (err, requestData) {
       req.session.requestData = JSON.stringify(requestData);
-      res.redirect(requestData.authorizeUrl);
-    }
-  );
+      res.status(200).json(`/authorize: ${req.session.requestData}`).redirect(requestData.authorizeUrl);
+});
 });
 
-// get access token
+// // get access token
 
 app.get("/callback", (req, res) => {
   let oAuth = new Discogs(JSON.parse(req.session.requestData)).oauth();
   oAuth.getAccessToken(req.query.oauth_verifier, function (err, accessData) {
     req.session.accessData = JSON.stringify(accessData);
-    res.redirect(`${client_url}/authorizing`);
+      res.status(200).json(`/callback: ${req.session.accessData}`).redirect(`${client_url}/authorizing`);
   });
 });
 
-// make the OAuth call
+// // make the OAuth call
 
 app.get("/identity", function (req, res) {
-  let dis = new Discogs(JSON.parse(req.session.accessData));
-  dis.getIdentity(function (err, data) {
-    console.log(err, data);
-    res.send(data);
-  });
+      res.status(200).json(`/identity accessData: ${req.session.accessData}`)
 });
 
-// discogs test call
-//search for a new label
-app.get("/search", function (req, res) {
-  let dis = new Discogs(
-    "Sonic Archtecturev1.0",
-    JSON.parse(req.session.accessData)
-  );
-  dis.database().search(req.query.discogsAccessparams, function (err, data) {
-    console.log(err, data);
-    res.send(data);
-  });
-});
+// let dis = new Discogs(JSON.parse(req.session.accessData));
+  // dis.getIdentity(function (err, data) {
+  //   console.log(err, data);
+  //   res.send(data);
+  // });
+// });
+
+
+// //search for a new label
+// app.get("/search", function (req, res) {
+//   console.log(`/search requestData: ${req.session.requestData}`);
+//   console.log(`/search accessData: ${req.session.accessData}`);
+//   console.log(
+//     "-----------------------------------------------------------------"
+//   );
+//   let dis = new Discogs(
+//     "Sonic Archtecturev1.0",
+//     JSON.parse(req.session.accessData)
+//   );
+//   dis.database().search(req.query.discogsAccessparams, function (err, data) {
+//     console.log(err);
+//     res.send(data);
+//   });
+// });
+
+
+
+
+
+
 //search for entries in the users labels
 
 app.get("/usersLabelsSearch", function (req, res) {
