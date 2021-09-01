@@ -15,9 +15,7 @@ app.use(
   cors({
     credentials: true,
     origin:
-      process.env.NODE_ENV === "production"
-        ? "https://sonic-architecture-v1.netlify.app"
-        : "http://localhost:3000",
+      process.env.CLIENT_URL
   })
 );
 
@@ -57,13 +55,8 @@ const db = mongoose.connection;
 // URL'S
 
 const API_BASE_URL =
-  process.env.NODE_ENV === "production"
-    ? "https://rlca-backend.herokuapp.com"
-    : "http://localhost:3001";
-const client_url =
-  process.env.NODE_ENV === "production"
-    ? "https://sonic-architecture-v1.netlify.app"
-    : "http://localhost:3000";
+  process.env.API_URL;
+const client_url = process.env.CLIENT_URL
 
 db.on("error", (error) => console.error(error));
 db.once("open", () => console.log("Connected to Database"));
